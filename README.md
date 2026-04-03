@@ -236,16 +236,6 @@ Perguntas que este projeto deve responder objetivamente:
 
 ---
 
-## 🚀 Próximos Passos
-
-- [ ] Implementar **walk-forward validation** para estimativa mais robusta do desempenho
-- [ ] Adicionar variáveis exógenas: Taxa Selic, câmbio USD/BRL, PIB
-- [ ] Testar modelo **SARIMAX** com variáveis externas
-- [ ] Criar dashboard interativo com Streamlit para visualização das previsões
-- [ ] Automatizar atualização mensal dos dados e retraining do modelo
-
----
-
 ## 👤 Autor
 
 Desenvolvido como projeto de ciência de dados aplicado a macroeconomia brasileira.
