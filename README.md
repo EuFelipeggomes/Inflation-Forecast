@@ -198,12 +198,6 @@ Isso irá:
 
 ### 5. Exploração interativa (opcional)
 
-```bash
-jupyter notebook notebooks/eda.ipynb
-```
-
----
-
 ## 📦 Requisitos
 
 - Python 3.10+

@@ -14,7 +14,9 @@ def clean_data(df: pd.DataFrame) -> pd.DataFrame:
     existing = list(output_path.glob(f"ipca_clean_{current_month}*.csv"))
     if existing:
         print(f"Dados processados do mês atual já existem. Carregando: {existing[0]}")
-        return pd.read_csv(existing[0], index_col=0, parse_dates=True)
+        df = pd.read_csv(existing[0], index_col=0, parse_dates=True)
+        df.index = pd.to_datetime(df.index)
+        return df
 
     df.columns = ["ipca_pct"]
     df.index = pd.to_datetime(df.index)
