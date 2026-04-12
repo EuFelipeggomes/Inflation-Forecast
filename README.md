@@ -183,7 +183,14 @@ source venv/bin/activate
 pip install -r requirements.txt
 ```
 
-### 4. Execute o pipeline completo
+
+### 4. Verifique o Setup do Projeto
+
+```bash
+python check_setup.py
+```
+
+### 5. Execute o pipeline completo
 
 ```bash
 python main.py
