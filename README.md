@@ -146,6 +146,7 @@ inflation-forecast/
 │   ├── figures/                # Gráficos gerados
 │   └── metrics/                # Tabelas de métricas em CSV
 │
+│── check_setup.py              # Script que verifica setup do projeto
 ├── config.py                   # Parâmetros centralizados do projeto
 ├── main.py                     # Pipeline completo (ponto de entrada)
 ├── requirements.txt            # Dependências do projeto
