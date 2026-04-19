@@ -4,6 +4,7 @@ import config
 from src.data_loader import data_loader
 from src.evaluation import calculate_metrics, baseline_naive, baseline_mean, save_metrics
 from src.model_arima import find_arima_params, train_arima, forecast_arima, plot_diagnostics
+from src.model_prophet import train_prophet, forecast_prophet, plot_prophet_components
 from src.preprocessing import clean_data, split_temporal
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s — %(message)s")
@@ -45,6 +46,23 @@ def main():
 
     log.info("Analisando resíduos...")
     plot_diagnostics(modelo_arima)
+
+    log.info("Treinando Prophet...")
+    modelo_prophet = train_prophet(train)
+
+    log.info("Gerando previsões Prophet...")
+    pred_prophet = forecast_prophet(modelo_prophet, steps=len(test))
+    pred_prophet.index = test.index  # garante alinhamento de índices
+
+    metricas_prophet = calculate_metrics(test, pred_prophet, name="Prophet")
+
+    save_metrics(
+        [metricas_naive, metricas_mean, metricas_arima, metricas_prophet],
+        path=config.RESULTS_PATH
+    )
+
+    log.info("Plotando componentes Prophet...")
+    plot_prophet_components(modelo_prophet, train)
 
 if __name__ == "__main__":
     main()
