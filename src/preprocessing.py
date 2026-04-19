@@ -34,3 +34,12 @@ def clean_data(df: pd.DataFrame) -> pd.DataFrame:
     print(f"Dado processado salvo em: {filename}")
 
     return df
+
+def split_temporal(df: pd.DataFrame, train_end: str, test_start: str):
+    train = df[df.index <= train_end]
+    test = df[df.index >= test_start]
+
+    print(f"Treino: {train.index.min().date()} → {train.index.max().date()} ({len(train)} meses)")
+    print(f"Teste:  {test.index.min().date()} → {test.index.max().date()} ({len(test)} meses)")
+
+    return train, test
