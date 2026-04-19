@@ -20,7 +20,7 @@ def data_loader() -> pd.DataFrame:
         ipca = sgs.get(
             config.IPCA_SERIES_CODE,
             start=config.START_DATE,
-            end=config.TRAIN_END_DATE
+            end=config.END_DATE
         )
     except Exception as e:
         raise RuntimeError(f"Erro ao buscar IPCA: {e}")

@@ -28,7 +28,7 @@ def calculate_metrics(test: pd.DataFrame, prevision: pd.Series, name: str) -> di
 def save_metrics(lista_metricas: list, path: str) -> None:
     df = pd.DataFrame(lista_metricas)
     df = df.sort_values("mae")
-    filename = f"{path}/comparison.csv"
+    filename = f"{path}/metrics/comparison.csv"
     df.to_csv(filename, index=False)
     print(f"\nMétricas salvas em: {filename}")
     print(df.to_string(index=False))
@@ -95,3 +95,20 @@ def plot_erros(test: pd.DataFrame, previsoes: dict, save_path: str) -> None:
     plt.savefig(f"{save_path}/figures/erros_por_mes.png", dpi=150)
     plt.close()
     print("Gráfico salvo em results/figures/erros_por_mes.png")
+
+def export_previsao_futura(pred_arima, conf_int, pred_prophet: pd.DataFrame,
+                               path: str) -> None:
+        # Monta tabela comparativa das previsões futuras
+        df_export = pd.DataFrame({
+            "arima": pred_arima.values,
+            "arima_lower": conf_int.iloc[:, 0].values,
+            "arima_upper": conf_int.iloc[:, 1].values,
+            "prophet": pred_prophet["yhat"].values,
+            "prophet_lower": pred_prophet["yhat_lower"].values,
+            "prophet_upper": pred_prophet["yhat_upper"].values,
+        }, index=pred_arima.index)
+
+        filename = f"{path}/metrics/comparison.csv"
+        df_export.to_csv(filename)
+        print(f"Previsão futura exportada em: {filename}")
+        print(df_export.round(4).to_string())

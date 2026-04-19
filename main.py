@@ -8,6 +8,15 @@ from src.model_prophet import train_prophet, forecast_prophet, plot_prophet_comp
     plot_previsao_futura
 from src.preprocessing import clean_data, split_temporal
 
+from src.evaluation import (
+    baseline_naive, baseline_mean,
+    calculate_metrics, save_metrics,
+    plot_comparativo, plot_erros,
+    export_previsao_futura          # ← novo
+)
+
+
+
 logging.basicConfig(level=logging.INFO, format="%(asctime)s — %(message)s")
 log = logging.getLogger(__name__)
 
@@ -83,6 +92,12 @@ def main():
 
     plot_previsao_futura(df, pred_fut_arima, conf_int, pred_fut_prophet,
                          save_path=config.RESULTS_PATH)
+
+    log.info("Exportando previsão futura...")
+    export_previsao_futura(pred_fut_arima, conf_int, pred_fut_prophet, path=config.RESULTS_PATH)
+
+    log.info("Pipeline concluído. Resultados em /results")
+
 
 if __name__ == "__main__":
     main()
