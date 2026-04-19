@@ -48,3 +48,15 @@ def plot_diagnostics(fitted_model) -> None:
     plt.savefig("results/figures/arima_diagnostics.png", dpi=150)
     plt.close()
     print("Diagnóstico salvo em results/figures/arima_diagnostics.png")
+
+def forecast_futuro_arima(df: pd.DataFrame, steps: int) -> pd.Series:
+    print(f"Retreinando ARIMA com todos os dados ({len(df)} meses)...")
+
+    order = find_arima_params(df)
+    modelo_final = train_arima(df, order)
+
+    forecast = modelo_final.get_forecast(steps=steps)
+    pred = forecast.predicted_mean
+    conf_int = forecast.conf_int()
+
+    return pred, conf_int

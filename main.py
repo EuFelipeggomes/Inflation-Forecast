@@ -3,8 +3,9 @@ import logging
 import config
 from src.data_loader import data_loader
 from src.evaluation import calculate_metrics, baseline_naive, baseline_mean, save_metrics, plot_comparativo, plot_erros
-from src.model_arima import find_arima_params, train_arima, forecast_arima, plot_diagnostics
-from src.model_prophet import train_prophet, forecast_prophet, plot_prophet_components
+from src.model_arima import find_arima_params, train_arima, forecast_arima, plot_diagnostics, forecast_futuro_arima
+from src.model_prophet import train_prophet, forecast_prophet, plot_prophet_components, forecast_futuro_prophet, \
+    plot_previsao_futura
 from src.preprocessing import clean_data, split_temporal
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s — %(message)s")
@@ -75,6 +76,13 @@ def main():
 
     plot_comparativo(test, previsoes, save_path=config.RESULTS_PATH)
     plot_erros(test, previsoes, save_path=config.RESULTS_PATH)
+
+    log.info("Gerando previsão futura...")
+    pred_fut_arima, conf_int = forecast_futuro_arima(df, steps=config.FORECAST_HORIZON)
+    pred_fut_prophet = forecast_futuro_prophet(df, steps=config.FORECAST_HORIZON)
+
+    plot_previsao_futura(df, pred_fut_arima, conf_int, pred_fut_prophet,
+                         save_path=config.RESULTS_PATH)
 
 if __name__ == "__main__":
     main()
