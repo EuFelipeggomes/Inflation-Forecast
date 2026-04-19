@@ -1,5 +1,3 @@
-# Inflation-Forecast
-
 # 📈 Previsão de Inflação (IPCA) — Brasil
 
 Modelo de séries temporais para previsão do IPCA (Índice de Preços ao Consumidor Amplo), o índice oficial de inflação do Brasil, utilizando dados históricos do Banco Central do Brasil.
@@ -47,14 +45,14 @@ Desenvolver um pipeline reprodutível de previsão de inflação que:
 | Série | IPCA — Variação mensal (%) |
 | Código SGS | 433 |
 | Frequência | Mensal |
-| Período utilizado | Janeiro/2000 — presente |
+| Período utilizado | Janeiro/1995 a Dezembro/2022 |
 | Fonte de coleta | API pública do BCB via `python-bcb` |
 
 ### Divisão temporal
 
 ```
-|--------- TREINO ---------|---- TESTE ----|---- PREVISÃO ----|
-  jan/2000 → dez/2022        jan → dez/2023    jan/2024 →
+|--------- TREINO ----------|---- TESTE ----|---- PREVISÃO ----|
+  jan/1995 → dez/2021         jan → dez/2022    jan/2023 →
 ```
 
 > ⚠️ Os dados **nunca são embaralhados**. A ordem temporal é sempre respeitada.
@@ -80,7 +78,7 @@ Modelo clássico de séries temporais composto por três componentes:
 - **I (Integrado):** aplica diferenciação para garantir estacionariedade
 - **MA (Média Móvel):** usa erros passados do modelo
 
-Os parâmetros `(p, d, q)` foram selecionados a partir dos gráficos ACF e PACF e confirmados via critério AIC com `auto_arima`.
+Os parâmetros `(p, d, q)` foram selecionados a partir dos gráficos ACF e PACF e confirmados via critério AIC com `auto_arima`. O modelo selecionado foi **ARIMA(1, 0, 2) com intercepto** — AIC de 205.51.
 
 ### Prophet
 
@@ -96,29 +94,33 @@ Configurado com `seasonality_mode='multiplicative'` para capturar a sazonalidade
 
 ## 📉 Resultados
 
-> Os valores abaixo são exemplos de estrutura. Atualize com os resultados reais após executar o projeto.
-
-### Métricas — Período de teste (2023)
+### Métricas — Período de teste (2022)
 
 | Modelo | MAE | RMSE |
 |---|---|---|
-| Naive Baseline | — | — |
-| Mean Baseline | — | — |
-| ARIMA | — | — |
-| Prophet | — | — |
+| **Prophet** | **0.4490** | **0.5913** |
+| ARIMA | 0.4529 | 0.6271 |
+| Mean Baseline | 0.4567 | 0.6274 |
+| Naive Baseline | 0.6183 | 0.7843 |
 
-### Previsão — Próximos 6 meses
+> Prophet venceu em ambas as métricas. O RMSE significativamente menor indica que o Prophet cometeu menos erros grandes ao longo do ano de 2022.
 
-| Mês | Previsão IPCA (%) | Intervalo Inferior | Intervalo Superior |
+### Previsão — Próximos 6 meses (a partir de jan/2023)
+
+Os valores abaixo refletem a previsão gerada pelo Prophet, modelo com melhor desempenho no período de teste:
+
+| Mês | Prophet (%) | Intervalo Inferior | Intervalo Superior |
 |---|---|---|---|
-| Mês +1 | — | — | — |
-| Mês +2 | — | — | — |
-| Mês +3 | — | — | — |
-| Mês +4 | — | — | — |
-| Mês +5 | — | — | — |
-| Mês +6 | — | — | — |
+| Jan/2023 | ~0.60 | ~0.10 | ~1.10 |
+| Fev/2023 | ~0.55 | ~0.00 | ~1.10 |
+| Mar/2023 | ~0.55 | ~-0.05 | ~1.15 |
+| Abr/2023 | ~0.50 | ~-0.10 | ~1.10 |
+| Mai/2023 | ~0.45 | ~-0.15 | ~1.05 |
+| Jun/2023 | ~0.45 | ~-0.15 | ~1.05 |
 
-Os resultados completos estão em `results/metrics/comparison.csv` e os gráficos em `results/figures/`.
+> Os valores exatos estão em `results/metrics/previsao_futura.csv`.
+
+Os resultados completos estão em `results/metrics/` e os gráficos em `results/figures/`.
 
 ---
 
@@ -140,11 +142,18 @@ inflation-forecast/
 │   ├── preprocessing.py        # Limpeza, tratamento e divisão temporal
 │   ├── model_arima.py          # Treinamento e previsão com ARIMA
 │   ├── model_prophet.py        # Treinamento e previsão com Prophet
-│   └── evaluation.py           # Métricas, baseline e comparação
+│   └── evaluation.py           # Métricas, baselines, gráficos e exportação
 │
 ├── results/
 │   ├── figures/                # Gráficos gerados
+│   │   ├── real_vs_previsto.png
+│   │   ├── erros_por_mes.png
+│   │   ├── arima_diagnostics.png
+│   │   ├── prophet_components.png
+│   │   └── previsao_futura.png
 │   └── metrics/                # Tabelas de métricas em CSV
+│       ├── comparison.csv
+│       └── previsao_futura.csv
 │
 │── check_setup.py              # Script que verifica setup do projeto
 ├── config.py                   # Parâmetros centralizados do projeto
@@ -161,8 +170,8 @@ inflation-forecast/
 ### 1. Clone o repositório
 
 ```bash
-git clone https://github.com/seu-usuario/inflation-forecast.git
-cd inflation-forecast
+git clone https://github.com/EuFelipeggomes/Inflation-Forecast.git
+cd Inflation-Forecast
 ```
 
 ### 2. Crie e ative o ambiente virtual
@@ -206,6 +215,12 @@ Isso irá:
 
 ### 5. Exploração interativa (opcional)
 
+```bash
+jupyter notebook notebooks/eda.ipynb
+```
+
+---
+
 ## 📦 Requisitos
 
 - Python 3.10+
@@ -226,21 +241,47 @@ Isso irá:
 
 ## 🔎 Conclusão Crítica
 
-> Esta seção deve ser preenchida após a execução do projeto com os resultados reais.
+### O Prophet venceu — mas por margem pequena
 
-Perguntas que este projeto deve responder objetivamente:
+O Prophet obteve MAE de 0.449 contra 0.457 do baseline Mean — uma melhoria de apenas 1.7%. O ARIMA ficou entre os dois com MAE de 0.453. A margem pequena não é surpresa: 2022 foi um ano extraordinariamente difícil de prever.
 
-- O ARIMA superou o baseline naive? Em quanto?
-- O Prophet superou o ARIMA no período de teste?
-- O erro aumenta proporcionalmente com o horizonte de previsão?
-- Os modelos falharam em algum período específico? Por quê?
-- Qual modelo você usaria em produção e em quais condições ele falharia?
+### O evento que quebrou todos os modelos
+
+Em julho de 2022 o governo federal zerou impostos sobre combustíveis, causando deflação de -0.68% — o maior choque negativo da série desde 1998. Nenhum modelo previu isso porque é um evento de política fiscal discricionária, impossível de capturar com dados históricos. O erro de todos os modelos em julho foi acima de 1 ponto percentual.
+
+### Quando o Prophet se saiu melhor
+
+O Prophet capturou a tendência de queda do segundo semestre de 2022 melhor que o ARIMA, resultando em RMSE significativamente menor (0.591 vs 0.627). Isso sugere que o Prophet é mais adequado para períodos de mudança de tendência.
+
+### Quando o ARIMA se saiu melhor
+
+No primeiro semestre, onde a série estava em alta, o ARIMA convergiu mais rapidamente para os valores reais. Para períodos de inflação estável e crescente, o componente autorregressivo forte (ar.L1 = 0.84) é uma vantagem.
+
+### Qual modelo usar em produção
+
+O Prophet seria a escolha para previsão de médio prazo (3–6 meses) por capturar melhor mudanças de tendência. O ARIMA seria preferível para previsão de curtíssimo prazo (1–2 meses) onde a persistência autorregressiva é mais relevante.
+
+### Limitação principal
+
+Ambos os modelos univariados ignoram completamente as variáveis que mais movem a inflação: taxa Selic, câmbio, preço do petróleo e choques de oferta. Um modelo multivariado (SARIMAX ou Prophet com regressores externos) seria o próximo passo natural.
+
+---
+
+## 🚀 Próximos Passos
+
+- [ ] Implementar **walk-forward validation** para estimativa mais robusta do desempenho
+- [ ] Adicionar variáveis exógenas: Taxa Selic, câmbio USD/BRL, preço do petróleo
+- [ ] Testar modelo **SARIMAX** com variáveis externas
+- [ ] Criar dashboard interativo com Streamlit para visualização das previsões
+- [ ] Automatizar atualização mensal dos dados e retreinamento do modelo
 
 ---
 
 ## 👤 Autor
 
-Desenvolvido como projeto de ciência de dados aplicado a macroeconomia brasileira.
+**Felipe Gomes** — [@EuFelipeggomes](https://github.com/EuFelipeggomes)
+
+Projeto de ciência de dados aplicado a macroeconomia brasileira, desenvolvido como parte do portfólio de Machine Learning.
 
 ---
 

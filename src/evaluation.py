@@ -108,7 +108,7 @@ def export_previsao_futura(pred_arima, conf_int, pred_prophet: pd.DataFrame,
             "prophet_upper": pred_prophet["yhat_upper"].values,
         }, index=pred_arima.index)
 
-        filename = f"{path}/metrics/comparison.csv"
+        filename = f"{path}/metrics/previsao_futura.csv"
         df_export.to_csv(filename)
         print(f"Previsão futura exportada em: {filename}")
         print(df_export.round(4).to_string())
