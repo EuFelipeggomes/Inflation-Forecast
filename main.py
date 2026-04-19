@@ -3,6 +3,7 @@ import logging
 import config
 from src.data_loader import data_loader
 from src.evaluation import calculate_metrics, baseline_naive, baseline_mean, save_metrics
+from src.model_arima import find_arima_params, train_arima, forecast_arima, plot_diagnostics
 from src.preprocessing import clean_data, split_temporal
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s — %(message)s")
@@ -27,6 +28,23 @@ def main():
     metricas_mean = calculate_metrics(test, pred_mean, name="Mean")
 
     save_metrics([metricas_naive, metricas_mean], path=config.RESULTS_PATH)
+
+    log.info("Treinando ARIMA...")
+    order = find_arima_params(train)
+    modelo_arima = train_arima(train, order)
+
+    log.info("Gerando previsões ARIMA...")
+    pred_arima = forecast_arima(modelo_arima, steps=len(test))
+
+    metricas_arima = calculate_metrics(test, pred_arima, name="ARIMA")
+
+    save_metrics(
+        [metricas_naive, metricas_mean, metricas_arima],
+        path=config.RESULTS_PATH
+    )
+
+    log.info("Analisando resíduos...")
+    plot_diagnostics(modelo_arima)
 
 if __name__ == "__main__":
     main()

@@ -4,13 +4,11 @@ from sklearn.metrics import mean_absolute_error, mean_squared_error
 
 
 def baseline_naive(train: pd.DataFrame, test: pd.DataFrame) -> pd.Series:
-    # Desloca a série em 1 período — o valor de hoje vira previsão de amanhã
     naive = train["ipca_pct"].shift(1).reindex(test.index, method="nearest")
     return naive
 
 
 def baseline_mean(train: pd.DataFrame, test: pd.DataFrame) -> pd.Series:
-    # Repete a média do treino para todos os meses do teste
     media = train["ipca_pct"].mean()
     mean_forecast = pd.Series(media, index=test.index)
     return mean_forecast
