@@ -9,8 +9,7 @@ dependencias = [
     "prophet",
     "sklearn",
     "bcb",
-    "pmdarima",
-    "plotly",
+    "pmdarima"
 ]
 
 print(f"Python: {sys.version}\n")
